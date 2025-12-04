@@ -59,10 +59,10 @@ mvn exec:java -Dexec.mainClass="im.arun.toon4j.example.PojoExample"
 ### 3. Or run all examples
 
 ```bash
-java -cp target/toon4j-example-1.0.0.jar:~/.m2/repository/im/arun/toon4j/1.0.0/toon4j-1.0.0.jar im.arun.toon4j.example.EncoderExample
-java -cp target/toon4j-example-1.0.0.jar:~/.m2/repository/im/arun/toon4j/1.0.0/toon4j-1.0.0.jar im.arun.toon4j.example.DecoderExample
-java -cp target/toon4j-example-1.0.0.jar:~/.m2/repository/im/arun/toon4j/1.0.0/toon4j-1.0.0.jar im.arun.toon4j.example.AdvancedExample
-java -cp target/toon4j-example-1.0.0.jar:~/.m2/repository/im/arun/toon4j/1.0.0/toon4j-1.0.0.jar im.arun.toon4j.example.PojoExample
+java -cp target/toon4j-example-1.2.0.jar:~/.m2/repository/im/arun/toon4j/1.2.0/toon4j-1.2.0.jar im.arun.toon4j.example.EncoderExample
+java -cp target/toon4j-example-1.2.0.jar:~/.m2/repository/im/arun/toon4j/1.2.0/toon4j-1.2.0.jar im.arun.toon4j.example.DecoderExample
+java -cp target/toon4j-example-1.2.0.jar:~/.m2/repository/im/arun/toon4j/1.2.0/toon4j-1.2.0.jar im.arun.toon4j.example.AdvancedExample
+java -cp target/toon4j-example-1.2.0.jar:~/.m2/repository/im/arun/toon4j/1.2.0/toon4j-1.2.0.jar im.arun.toon4j.example.PojoExample
 ```
 
 ## Example Overview
@@ -79,7 +79,9 @@ Demonstrates encoding Java objects to TOON format:
 6. **Complex Structures** - Real-world nested data
 7. **Custom Options** - Using EncodeOptions (indent, delimiters, etc.)
 8. **Different Delimiters** - Comma, pipe, and tab delimiters
-9. **Real-World Example** - API response encoding with token savings
+9. **Key Folding, Flatten & Replacers** - Collapse nested keys, force dotted paths, filter sensitive fields
+10. **Streaming Lines** - Using `encodeLines` to stream output
+11. **Real-World Example** - API response encoding with token savings
 
 ### DecoderExample.java
 

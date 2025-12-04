@@ -3,6 +3,8 @@ package im.arun.toon4j.example;
 import im.arun.toon4j.Delimiter;
 import im.arun.toon4j.EncodeOptions;
 import im.arun.toon4j.Toon;
+import im.arun.toon4j.KeyFolding;
+import im.arun.toon4j.EncodeReplacer;
 
 import java.util.*;
 
@@ -27,6 +29,7 @@ public class EncoderExample {
         example7_CustomOptions();
         example8_DifferentDelimiters();
         example9_RealWorldExample();
+        example10_StreamLines();
     }
 
     /**
@@ -206,12 +209,36 @@ public class EncoderExample {
         System.out.println(Toon.encode(data, fourSpaces));
         System.out.println();
 
-        // With length marker
-        System.out.println("With length marker:");
-        EncodeOptions withMarker = EncodeOptions.builder()
-                .lengthMarker(true)
+        // Safe key folding for single-key chains
+        System.out.println("With safe key folding:");
+        EncodeOptions folding = EncodeOptions.builder()
+                .keyFolding(KeyFolding.SAFE)
+                .flattenDepth(3)
                 .build();
-        System.out.println(Toon.encode(data, withMarker));
+        System.out.println(Toon.encode(data, folding));
+        System.out.println();
+
+        // Aggressive flatten (forces dotted keys for single-key wrappers)
+        System.out.println("Aggressive flatten (flatten=true):");
+        EncodeOptions flattenOptions = EncodeOptions.builder()
+                .flatten(true)
+                .flattenDepth(3)
+                .build();
+        Map<String, Object> nestedWrapper = new LinkedHashMap<>();
+        nestedWrapper.put("meta", Map.of("info", Map.of("id", 123, "env", "prod")));
+        System.out.println("Input: " + nestedWrapper);
+        System.out.println("Output:");
+        System.out.println(Toon.encode(nestedWrapper, flattenOptions));
+        System.out.println();
+
+        // Custom replacer to drop sensitive fields
+        System.out.println("With replacer (hiding `secret`)");
+        EncodeOptions withReplacer = EncodeOptions.builder()
+                .replacer((key, value, path) -> "secret".equals(key) ? EncodeReplacer.OMIT : value)
+                .build();
+        Map<String, Object> withSecret = new LinkedHashMap<>(data);
+        withSecret.put("secret", "top-secret");
+        System.out.println(Toon.encode(withSecret, withReplacer));
         System.out.println();
 
         // Compact
@@ -255,6 +282,25 @@ public class EncoderExample {
                 .delimiter(Delimiter.TAB)
                 .build();
         System.out.println(Toon.encode(data, tabOptions));
+        System.out.println();
+    }
+
+    /**
+     * Example 10: Streaming lines with encodeLines
+     */
+    private static void example10_StreamLines() {
+        printSectionHeader("Example 10: Streaming encodeLines");
+
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("team", "Platform");
+        payload.put("members", List.of(
+                createUser(1, "Ada", "Engineering"),
+                createUser(2, "Bob", "Product")
+        ));
+
+        for (String line : Toon.encodeLines(payload, EncodeOptions.builder().keyFolding(KeyFolding.SAFE).build())) {
+            System.out.println(line);
+        }
         System.out.println();
     }
 
@@ -330,6 +376,14 @@ public class EncoderExample {
         order.put("amount", amount);
         order.put("status", status);
         return order;
+    }
+
+    private static Map<String, Object> createUser(int id, String name, String team) {
+        Map<String, Object> user = new LinkedHashMap<>();
+        user.put("id", id);
+        user.put("name", name);
+        user.put("team", team);
+        return user;
     }
 
     private static void printSectionHeader(String title) {
